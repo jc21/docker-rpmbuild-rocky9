@@ -4,22 +4,6 @@ LABEL maintainer="Jamie Curnow <jc@jc21.com>"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Yum
-RUN dnf -y install --nobest --skip-broken \
-	epel-release \
-	dnf-plugins-core \
-	&& dnf config-manager --enable crb \
-	&& dnf localinstall -y "https://yum.jc21.com/jc21-yum.rpm" \
-	&& dnf -y update \
-	&& dnf -y --allowerasing install scl-utils scl-utils-build which mock git wget curl kernel-devel rpmdevtools rpmlint rpm-build sudo gcc-c++ make automake autoconf yum-utils scl-utils scl-utils-build cmake libtool expect \
-	&& dnf -y install aspell-devel bzip2-devel chrpath cyrus-sasl-devel enchant-devel fastlz-devel fontconfig-devel freetype-devel gettext-devel gmp-devel \
-	httpd-devel krb5-devel libacl-devel libcurl-devel libdb-devel libedit-devel liberation-sans-fonts libevent-devel libgit2 libicu-devel libjpeg-turbo-devel libuuid-devel \
-	libmcrypt-devel libmemcached-devel libpng-devel libtiff-devel libtool-ltdl-devel libwebp-devel libX11-devel libXpm-devel libxml2-devel \
-	libxslt-devel memcached net-snmp-devel openldap-devel openssl-devel pam-devel pcre-devel perl-generators postgresql-devel recode-devel sqlite-devel \
-	systemd-devel systemtap-sdt-devel tokyocabinet-devel unixODBC-devel zlib-devel \
-	&& dnf clean all \
-	&& rm -rf /var/cache/yum
-
 # build files
 COPY bin/build-spec /bin/
 COPY bin/build-all /bin/
@@ -28,9 +12,9 @@ COPY bin/build-all /bin/
 COPY etc/sudoers.d/wheel /etc/sudoers.d/
 RUN chown root:root /etc/sudoers.d/*
 
-# Remove requiretty from sudoers main file
-RUN sed -i '/Defaults    requiretty/c\#Defaults    requiretty' /etc/sudoers
-RUN sed -i '/Defaults.*XAUTHORITY"/a Defaults    env_keep += "LANG HTTP_PROXY HTTPS_PROXY NO_PROXY http_proxy https_proxy no_proxy"' /etc/sudoers
+COPY scripts/install-base.sh /tmp/install-base.sh
+RUN /tmp/install-base.sh \
+	&& rm -f /tmp/install-base.sh
 
 # Rpm User
 RUN adduser -G wheel rpmbuilder \
