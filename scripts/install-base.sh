@@ -7,7 +7,7 @@ sed -i 's/skip_if_unavailable=False/skip_if_unavailable=True/g' /etc/dnf/dnf.con
 
 dnf -y install epel-release dnf-plugins-core
 dnf config-manager --enable crb
-dnf localinstall -y 'https://yum.jc21.com/jc21-yum.rpm'
+dnf localinstall -y 'https://yum.jc21.com/jc21.rpm'
 dnf -y update
 dnf -y --allowerasing install \
 	aspell-devel \
