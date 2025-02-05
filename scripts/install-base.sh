@@ -1,13 +1,15 @@
 #!/bin/bash -e
 
 # dnf tweaks
-echo "fastestmirror=1" >> /etc/dnf/dnf.conf
+#echo "fastestmirror=1" >> /etc/dnf/dnf.conf
 sed -i 's/best=True/best=False/g' /etc/dnf/dnf.conf
 sed -i 's/skip_if_unavailable=False/skip_if_unavailable=True/g' /etc/dnf/dnf.conf
 
+dnf -y update
 dnf -y install epel-release dnf-plugins-core
-dnf config-manager --enable crb
 dnf localinstall -y 'https://yum.jc21.com/jc21.rpm'
+dnf clean all && dnf makecache
+dnf config-manager --enable crb
 dnf -y update
 dnf -y --allowerasing install \
 	aspell-devel \

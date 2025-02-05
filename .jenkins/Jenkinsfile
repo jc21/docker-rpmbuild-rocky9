@@ -64,13 +64,8 @@ pipeline {
 		githubPush()
 	}
 	post {
-		success {
-			juxtapose event: 'success'
-			sh 'figlet "SUCCESS"'
-		}
-		failure {
-			juxtapose event: 'failure'
-			sh 'figlet "FAILURE"'
+		always {
+			printResult(true)
 		}
 	}
 }
